@@ -29,7 +29,7 @@
                                   date_range = c("2016-01-03","2016-10-29"),
                                   metrics = c("users","sessions","bounces"),
                                   dimensions = c("week","country"),
-                                  max = 10000 )
+                                  max = 40000 )
         
         }, warning = function(w){
           print("warning")
@@ -53,11 +53,12 @@
           
         })
       }
-      
     
+    ## remove temp variables
+    rm(errTrp,tmp)  
     
+    ## save the result
+    write.csv(df1,"allBrands_weekly_curated.csv",row.names = F)
     
-    
-  
     
     
