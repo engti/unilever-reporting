@@ -1,6 +1,9 @@
 ## load library
   library(googleAnalyticsR)
   library(dplyr)
+  
+## source the authentication file
+  source("options.R")
     
 ## get account info
   account_list <- google_analytics_account_list()
