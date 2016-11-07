@@ -66,20 +66,22 @@ A look at the traffic data to Unilever sites through different lenses.
   
 ```
 
-<div>
-  <div style = "float:left">
-  ```{r showPlot1,echo = F, fig.width = 4, fig.height = 4}
+<div style = "float:left" >
+ <div style = "float:left">
+ 
+```{r showPlot1,echo = F, fig.width = 4.5, fig.height = 4}
     piePlot
-  ```
-  </div>
-  
-  <div style = "float:right">
-  ```{r showPlot2,echo = F, fig.width = 4, fig.height = 4}
+```
+ </div>
+ 
+ <div style = "float:right">
+ 
+```{r showPlot2,echo = F, fig.width = 4.5, fig.height = 4}
     trendPlot
-  ```
-  </div>
+```
+ </div>
 </div>
-<span>
+
 
 ## Hold Me
 Take this away

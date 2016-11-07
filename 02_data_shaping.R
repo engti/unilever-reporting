@@ -3,7 +3,7 @@
   library(plotly)
 
 ## read in data
-  siteData <- read.csv("allBrands_weekly_curated.csv",stringsAsFactors = F) %>% select(-ProfileName)
+  siteData <- read.csv("allBrands_medium_weekly_curated.csv",stringsAsFactors = F)
   siteMetaData <- read.csv("account_common_focus.csv",stringsAsFactors = F)
 
 ## merge traffic data with site meta data
@@ -35,3 +35,10 @@
   
   USPersonalExpenditure <- data.frame("Categorie"=rownames(USPersonalExpenditure), USPersonalExpenditure)
   data <- USPersonalExpenditure[,c('Categorie', 'X1960')]
+  
+  
+  ## ggplotly for trend line selector
+  tmp <- df2 %>% select(week,sessions) %>% group_by(week) %>% summarise_each(funs(sum)) %>% ungroup()
+  tmpPlot <- ggplot(tmp,aes(x=week,y=sessions)) + geom_line() 
+  ggplotly(tmpPlot)
+   

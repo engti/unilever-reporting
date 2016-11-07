@@ -70,7 +70,7 @@
     rm(errTrp,tmp)  
     
     ## save the result
-    write.csv(df1,"allBrands_weekly_curated.csv",row.names = F)
+    write.csv(df1,"allBrands_medium_weekly_curated.csv",row.names = F)
     
     
     

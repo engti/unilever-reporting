@@ -2,6 +2,11 @@
 
   library(shiny)
   library(shinydashboard)
+  library(dplyr)
+  library(leaflet)
+  library(plotly)
+  library(readr)
+  library(DT)
   
 
 ## read in the data
@@ -19,30 +24,35 @@
       valueBoxOutput("KPIpv",width = 2),
       valueBoxOutput("KPIduration",width = 2),
       box( width = 6,
-        plotOutput("trendggPlot",brush  = brushOpts(id="select_dates",direction = c("x")),width = "100%",height = "100px")
+        plotOutput("trendggPlot",brush  = brushOpts(id="select_dates",direction = c("x")),width = "100%",height = "80px")
       )
     ),
     fluidRow(
       box(width = 4, height = "450px",
-        plotlyOutput("piePlot")
+        plotlyOutput("mediumPlot")
       ),
       box(width = 4, height = "450px",
         plotlyOutput("brandPlot")
       ),
       box(width = 4, height = "450px",
-        plotlyOutput("subcatPie")
+        plotlyOutput("countryPlot")
       )
     ),
     fluidRow(
-      box(
+      box(width = 4,height = "450px",
+        plotlyOutput("piePlot")
+      ),
+      box(width = 4,height = "450px",
         plotlyOutput("trendCategoryPlot")
       ),
-      box(
-        verbatimTextOutput("diag")
+      box(width = 4,height = "450px",
+          plotlyOutput("subcatPlot")
       )
     ),
     fluidRow(
-      
+      box(width = 4,height = "450px",
+          verbatimTextOutput("diag")
+      )
     )
   )
   
