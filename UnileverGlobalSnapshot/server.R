@@ -5,13 +5,14 @@
   library(plotly)
   library(readr)
   library(DT)
+  library(magrittr)
   
 ## read in data
-  mainData <- read_csv("siteDataMerged.csv") %>%
-    mutate(
-      Brand = iconv(Brand, 'UTF-8', 'ASCII'),
-      medium = iconv(medium, 'UTF-8', 'ASCII')
-    ) 
+  # mainData <- read_csv("siteDataMerged.csv") %>%
+  #   mutate(
+  #     Brand = iconv(Brand, 'UTF-8', 'ASCII'),
+  #     medium = iconv(medium, 'UTF-8', 'ASCII')
+  #   ) 
 
 # Define server logic 
   
@@ -189,10 +190,30 @@ shinyServer(function(input, output) {
       arrange(-sessions)
     ## create the plot
     plot_ly(df1[1:10,], x=~sessions ,y=~reorder(Market,sessions),type = "bar",orientation = 'h') %>%
-      layout(title = 'Top Country',yaxis = list(title = ""),xaxis = list(title = "Sessions"),margin = list(l = 100)) 
+      layout(title = 'Top Market',yaxis = list(title = ""),xaxis = list(title = "Sessions"),margin = list(l = 100)) 
     # %>%
     #   layout(yaxis = list(categoryarray = ~sessions, categoryorder = "array"))
     # 
+  })
+  
+  output$mediumTable <- DT::renderDataTable({
+    df1 <- derivedData() %>%
+      select(medium,users,sessions,bounces) %>%
+      group_by(medium) %>%
+      summarise_each(funs(sum)) %>%
+      ungroup() %>%
+      arrange(-sessions)
+    
+    df1 <- rbind(top_n(df1,8),
+                 slice(df1,9:n()) %>% summarise(medium="other",users=sum(users),sessions=sum(sessions),bounces=sum(bounces))
+    )
+    df1 %<>% mutate(
+      bounceRate = bounces / sessions
+    ) %>%
+      select(-bounces) %>%
+      arrange(-users)
+    
+    datatable(df1) %>% formatPercentage(4,digits = 0) %>% formatCurrency(1:3,"",digits = 0)
   })
   
   output$diag <- renderPrint({
