@@ -8,11 +8,11 @@
   library(magrittr)
   
 ## read in data
-  # mainData <- read_csv("siteDataMerged.csv") %>%
-  #   mutate(
-  #     Brand = iconv(Brand, 'UTF-8', 'ASCII'),
-  #     medium = iconv(medium, 'UTF-8', 'ASCII')
-  #   ) 
+  mainData <- read_csv("siteDataMerged.csv") %>%
+    mutate(
+      Brand = iconv(Brand, 'UTF-8', 'ASCII'),
+      medium = iconv(medium, 'UTF-8', 'ASCII')
+    )
 
 # Define server logic 
   
