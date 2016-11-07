@@ -39,8 +39,8 @@
         tmp <- google_analytics_4(viewId = account_common_focus$Profile.ID[i],
                                   date_range = c("2016-01-03","2016-10-29"),
                                   metrics = c("users","sessions","bounces"),
-                                  dimensions = c("week","country"),
-                                  max = 40000 )
+                                  dimensions = c("week","medium","country"),
+                                  max = -1 )
         
         }, warning = function(w){
           print("warning")

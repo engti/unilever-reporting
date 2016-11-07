@@ -1,0 +1,85 @@
+---
+title: "Unilever Global Checkpoint"
+author: "Robin Browne"
+date: "November 4, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE,cache=FALSE}
+## set global chunk options
+  knitr::opts_chunk$set(echo = FALSE)
+
+## load library
+  library(ggplot2)
+  library(plotly)
+  library(dplyr)
+  library(plotly)
+  library(leaflet)
+
+## read in data
+  siteDataMerged <- read.csv("siteDataMerged.csv",stringsAsFactors = F)
+```
+
+## Key Metrics
+
+A look at the traffic data to Unilever sites through different lenses.
+
+
+```{r superCategory}
+## use plotly to make the pie chart
+  df1 <- siteDataMerged %>% select(Super.Category,sessions) %>% 
+    group_by(Super.Category) %>% 
+    summarise_each(funs(sum)) %>%
+    ungroup() %>%
+    arrange(-sessions)
+  
+  piePlot <- plot_ly(df1, labels = ~Super.Category, values = ~sessions,type = "pie") %>%
+    layout(title = 'Top Product Categories',
+           xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+           yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE)) %>%
+    layout(legend = list(orientation = 'h',
+                         font = list(
+                           family = "sans-serif",
+                           size = 10,
+                           color = "#000")
+                         )
+           )
+  
+  
+  
+  ## plot the trended line
+  df2 <- siteDataMerged %>% 
+    select(week,Super.Category,sessions) %>%
+    group_by(week,Super.Category) %>%
+    summarise_each(funs(sum)) %>%
+    ungroup()
+  
+  trendPlot <- plot_ly(df2, x = ~week, y = ~sessions,type = "scatter",mode = "lines", color = ~Super.Category) %>%
+    layout(legend = list(orientation = 'h',
+                         font = list(
+                           family = "sans-serif",
+                           size = 10,
+                           color = "#000")
+                         )
+           )
+  
+  
+```
+
+<div>
+  <div style = "float:left">
+  ```{r showPlot1,echo = F, fig.width = 4, fig.height = 4}
+    piePlot
+  ```
+  </div>
+  
+  <div style = "float:right">
+  ```{r showPlot2,echo = F, fig.width = 4, fig.height = 4}
+    trendPlot
+  ```
+  </div>
+</div>
+<span>
+
+## Hold Me
+Take this away
