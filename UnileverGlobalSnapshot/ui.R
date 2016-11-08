@@ -53,6 +53,11 @@
       box(title = "Traffic Sources Table",width = 6,status="primary",solidHeader = TRUE,collapsible = T,
           DT::dataTableOutput("mediumTable")
       ),
+      box(title = "Top Brands",width = 6,status="primary",solidHeader = TRUE,collapsible = T,
+          DT::dataTableOutput("topGainers")
+      )
+    ),
+    fluidRow(
       box(width = 4,height = "450px",
           verbatimTextOutput("diag")
       )

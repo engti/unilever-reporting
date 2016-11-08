@@ -11,7 +11,8 @@
   mainData <- read_csv("siteDataMerged.csv") %>%
     mutate(
       Brand = iconv(Brand, 'UTF-8', 'ASCII'),
-      medium = iconv(medium, 'UTF-8', 'ASCII')
+      medium = iconv(medium, 'UTF-8', 'ASCII'),
+      medium = replace(medium,medium == "(none)","Direct")
     )
 
 # Define server logic 
@@ -34,6 +35,25 @@ shinyServer(function(input, output) {
     }
     df1
     
+  })
+  
+  prevData <- reactive({
+    if(!is.null(input$select_dates)){
+      df1 <- mainData %>% filter(week >= 10,week <= 16) #derivedData()
+      max <- max(df1$week)
+      min <- min(df1$week)
+      diff <- max - min
+      t2 <- max - 1
+      t1 <- t2 - diff
+      if(t1>0){
+        df2 <- df1 %>% filter(week >= t1,week <= t2)
+        df2
+      }else{
+       NULL 
+      }
+    }else(
+      NULL
+    )
   })
   
   kpiData <- reactive({
@@ -135,9 +155,7 @@ shinyServer(function(input, output) {
     ## create the plot
     plot_ly(df2[1:10,], x=~sessions ,y=~reorder(Sub.Category,sessions),type = "bar",orientation = 'h') %>%
       layout(title = 'Product Sub Categories',yaxis = list(title = ""),xaxis = list(title = "Sessions"),margin = list(l = 150)) 
-    # %>%
-    #   layout(yaxis = list(categoryarray = ~sessions, categoryorder = "array"))
-    # 
+
   })
   
   output$brandPlot <- renderPlotly({
@@ -150,9 +168,7 @@ shinyServer(function(input, output) {
     ## create the plot
     plot_ly(df1[1:10,], x=~sessions ,y=~reorder(Brand,sessions),type = "bar",orientation = 'h') %>%
       layout(title = 'Top Brands',yaxis = list(title = ""),xaxis = list(title = "Sessions"),margin = list(l = 100)) 
-    # %>%
-    #   layout(yaxis = list(categoryarray = ~sessions, categoryorder = "array"))
-    # 
+
   })
   
   output$mediumPlot <- renderPlotly({
@@ -191,9 +207,6 @@ shinyServer(function(input, output) {
     ## create the plot
     plot_ly(df1[1:10,], x=~sessions ,y=~reorder(Market,sessions),type = "bar",orientation = 'h') %>%
       layout(title = 'Top Market',yaxis = list(title = ""),xaxis = list(title = "Sessions"),margin = list(l = 100)) 
-    # %>%
-    #   layout(yaxis = list(categoryarray = ~sessions, categoryorder = "array"))
-    # 
   })
   
   output$mediumTable <- DT::renderDataTable({
@@ -213,7 +226,29 @@ shinyServer(function(input, output) {
       select(-bounces) %>%
       arrange(-users)
     
-    datatable(df1) %>% formatPercentage(4,digits = 0) %>% formatCurrency(1:3,"",digits = 0)
+    datatable(df1) %>% formatPercentage(4,digits = 0) %>% formatCurrency(2:3,"",digits = 0)
+  })
+  
+  output$topGainers <- DT::renderDataTable({
+    if(!is.null(input$select_dates)){dfq1 <- derivedData() %>%
+      select(Brand,sessions) %>%
+      group_by(Brand) %>%
+      summarise_each(funs(sum)) %>%
+      ungroup()
+    dfq2 <- prevData() %>%
+      select(Brand,sessions) %>%
+      group_by(Brand) %>%
+      summarise_each(funs(sum)) %>%
+      ungroup()
+    names(dfq1)[2] <- "Current" 
+    names(dfq2)[2] <- "Previous"
+    dfq3 <- merge(dfq1,dfq2)
+    dfq3$Change <- (dfq3$Current-dfq3$Previous)
+    dfq3$ChangeP <- (dfq3$Current-dfq3$Previous)/dfq3$Previous
+    dfq3 %<>% arrange(-Current) %>% select(-Previous)
+    datatable(dfq3) %>% formatPercentage(4,digits = 0) %>% formatCurrency(2:3,"",digits = 0)}else{
+      NULL
+    }
   })
   
   output$diag <- renderPrint({
