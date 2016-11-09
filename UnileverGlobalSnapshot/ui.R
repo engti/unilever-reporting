@@ -28,6 +28,16 @@
       )
     ),
     fluidRow(
+      box(title = "Countries and Brands",width = 12,status="primary",solidHeader = TRUE,collapsible = T,
+          box(
+            plotlyOutput("scatterCountry")
+          ),
+          box(
+            DT::dataTableOutput("BrandTable")
+          )
+      )
+    ),
+    fluidRow(
       box(width = 12,status="primary",solidHeader = TRUE,collapsible = T,
         box(width = 4, height = "450px",
         plotlyOutput("mediumPlot")
@@ -57,16 +67,6 @@
       ),
       box(title = "Top Brands",width = 6,status="primary",solidHeader = TRUE,collapsible = T,
           DT::dataTableOutput("topGainers")
-      )
-    ),
-    fluidRow(
-      box(width = 12,status="primary",solidHeader = TRUE,collapsible = T,
-        box(
-          plotlyOutput("scatterCountry")
-        ),
-        box(
-          DT::dataTableOutput("BrandTable")
-        )
       )
     ),
     fluidRow(

@@ -8,27 +8,19 @@
   library(magrittr)
   
 ## read in data
-  # mainData <- read_csv("siteDataMerged.csv") %>%
-  #   mutate(
-  #     Brand = iconv(Brand, 'UTF-8', 'ASCII'),
-  #     medium = iconv(medium, 'UTF-8', 'ASCII'),
-  #     country = iconv(country, 'UTF-8', 'ASCII'),
-  #     medium = replace(medium,medium == "(none)","Direct")
-  #   )
+  mainData <- read_csv("siteDataMerged.csv") %>%
+    mutate(
+      Brand = iconv(Brand, 'UTF-8', 'ASCII'),
+      medium = iconv(medium, 'UTF-8', 'ASCII'),
+      country = iconv(country, 'UTF-8', 'ASCII'),
+      medium = replace(medium,medium == "(none)","Direct")
+    )
 
 # Define server logic 
   
 shinyServer(function(input, output) {
   
   derivedData <- reactive({
-    # df1 <- event_data("plotly_selected",source = "dateSelect")
-    # if(is.null(df1) || length(df1) == 0){
-    #   mainData
-    # }else{
-    #   mainData %>% filter(week >= df1$`xaxis.range[0]`,week <= df1$`xaxis.range[1]`)
-    # }
-    # df2 <- mainData %>% filter(week >= df1$`xaxis.range[0]`,week <= df1$`xaxis.range[1]`)
-    # sum(df2$sessions)
     if(is.null(input$select_dates)){
       df1 <- mainData
     }else{
@@ -311,54 +303,15 @@ shinyServer(function(input, output) {
   
   output$diag <- renderPrint({
     # df1 <- event_data("plotly_selected",source = "dateSelect")
-    # if(is.null(df1) == T) return(NULL)
-    # df1$`xaxis.range[0]`
-    # 
+    # if(is.null(df1) || length(df1) == 0){
+    #   mainData
+    # }else{
+    #   mainData %>% filter(week >= df1$`xaxis.range[0]`,week <= df1$`xaxis.range[1]`)
+    # }
     # df2 <- mainData %>% filter(week >= df1$`xaxis.range[0]`,week <= df1$`xaxis.range[1]`)
     # sum(df2$sessions)
     
     str(input$select_dates)
-    
-    # df1 <- event_data("plotly_click",source = "countrySelect")
-    # 
-    # 
-    # df2 <- derivedData() %>%
-    #   select(country,sessions,users) %>%
-    #   group_by(country) %>%
-    #   summarise_each(funs(sum)) %>%
-    #   ungroup() %>%
-    #   arrange(-sessions)
-    # 
-    # # df1
-    # 
-    # # paste0(df2[df1$pointNumber+1,]$country)
-    # 
-    # # df1 <- event_data("plotly_click",source = "countrySelect")
-    # # 
-    # # 
-    # # df2 <- derivedData() %>%
-    # #   select(country,sessions,users) %>%
-    # #   group_by(country) %>%
-    # #   summarise_each(funs(sum)) %>%
-    # #   ungroup() %>%
-    # #   arrange(-sessions)
-    # # 
-    # # # tmp <- "Brazil"
-    # # countryName <- df2[df1$pointNumber+1,1]
-    # # browser()
-    # # df3 <- mainData %>%
-    # #   select(country,Brand,sessions,bounces) %>%
-    # #   filter(country == countryName$country) %>%
-    # #   select(-country) %>%
-    # #   group_by(Brand) %>%
-    # #   summarise_each(funs(sum)) %>%
-    # #   ungroup() %>%
-    # #   arrange(-sessions) %>%
-    # #   mutate(
-    # #     bounceRate = bounces / sessions
-    # #   )
-    # # browser()
-    # str(df2[df1$pointNumber+1,1]$country)
 
   })
   
