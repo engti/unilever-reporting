@@ -8,12 +8,13 @@
   library(magrittr)
   
 ## read in data
-  mainData <- read_csv("siteDataMerged.csv") %>%
-    mutate(
-      Brand = iconv(Brand, 'UTF-8', 'ASCII'),
-      medium = iconv(medium, 'UTF-8', 'ASCII'),
-      medium = replace(medium,medium == "(none)","Direct")
-    )
+  # mainData <- read_csv("siteDataMerged.csv") %>%
+  #   mutate(
+  #     Brand = iconv(Brand, 'UTF-8', 'ASCII'),
+  #     medium = iconv(medium, 'UTF-8', 'ASCII'),
+  #     country = iconv(country, 'UTF-8', 'ASCII'),
+  #     medium = replace(medium,medium == "(none)","Direct")
+  #   )
 
 # Define server logic 
   
@@ -79,12 +80,14 @@ shinyServer(function(input, output) {
       ungroup()
     
     ggplot(df1,aes(x=week,y=sessions)) + geom_line() + ggtitle("Weekly Trend - Drag to Select reporting period") + theme(axis.line=element_blank(),axis.text.x=element_blank(),
-                                                             axis.text.y=element_blank(),axis.ticks=element_blank(),
-                                                             axis.title.x=element_blank(),
-                                                             axis.title.y=element_blank(),legend.position="none",
-                                                             panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-                                                             panel.grid.minor=element_blank(),plot.background=element_blank())
-    
+  axis.text.y=element_blank(),axis.ticks=element_blank(),
+  axis.title.x=element_blank(),
+  axis.title.y=element_blank(),legend.position="none",
+  panel.background=element_blank(),
+  panel.border=element_blank(),
+  panel.grid.major=element_blank(),
+  panel.grid.minor=element_blank(),
+  plot.background=element_blank())  
   })
   
   output$KPIvisit <- renderValueBox({
@@ -251,6 +254,61 @@ shinyServer(function(input, output) {
     }
   })
   
+  output$scatterCountry <- renderPlotly({
+    df1 <- derivedData() %>%
+      select(country,sessions,bounces) %>%
+      group_by(country) %>%
+      summarise_each(funs(sum)) %>%
+      ungroup() %>%
+      arrange(-sessions)
+    
+    plot_ly(df1[1:10,],x=~sessions,y=~bounces,
+            text =~paste("Country: ",country,"<br>Sessions: ",sessions),
+            source = "countrySelect"
+            )
+    
+  })
+  
+  output$BrandTable <- DT::renderDataTable({
+    df1 <- event_data("plotly_click",source = "countrySelect")
+    
+    if(is.null(df1)){
+      df3 <- derivedData() %>%
+        select(Brand,sessions,bounces) %>%
+        group_by(Brand) %>%
+        summarise_each(funs(sum)) %>%
+        ungroup() %>%
+        arrange(-sessions) %>%
+        mutate(
+          bounceRate = bounces / sessions
+        )
+    }else{
+      df2 <- derivedData() %>%
+        select(country,sessions,users) %>%
+        group_by(country) %>%
+        summarise_each(funs(sum)) %>%
+        ungroup() %>%
+        arrange(-sessions)
+      
+      # tmp <- "Brazil"
+      countryName <- df2[df1$pointNumber+1,1]
+      
+      df3 <- derivedData() %>%
+        select(country,Brand,sessions,bounces) %>%
+        filter(country == countryName$country) %>%
+        select(-country) %>%
+        group_by(Brand) %>%
+        summarise_each(funs(sum)) %>%
+        ungroup() %>%
+        arrange(-sessions) %>%
+        mutate(
+          bounceRate = bounces / sessions
+        )
+    }
+
+    datatable(df3) %>% formatPercentage(4,digits = 0) %>% formatCurrency(2:3,"",digits = 0)
+  })
+  
   output$diag <- renderPrint({
     # df1 <- event_data("plotly_selected",source = "dateSelect")
     # if(is.null(df1) == T) return(NULL)
@@ -258,7 +316,50 @@ shinyServer(function(input, output) {
     # 
     # df2 <- mainData %>% filter(week >= df1$`xaxis.range[0]`,week <= df1$`xaxis.range[1]`)
     # sum(df2$sessions)
+    
     str(input$select_dates)
+    
+    # df1 <- event_data("plotly_click",source = "countrySelect")
+    # 
+    # 
+    # df2 <- derivedData() %>%
+    #   select(country,sessions,users) %>%
+    #   group_by(country) %>%
+    #   summarise_each(funs(sum)) %>%
+    #   ungroup() %>%
+    #   arrange(-sessions)
+    # 
+    # # df1
+    # 
+    # # paste0(df2[df1$pointNumber+1,]$country)
+    # 
+    # # df1 <- event_data("plotly_click",source = "countrySelect")
+    # # 
+    # # 
+    # # df2 <- derivedData() %>%
+    # #   select(country,sessions,users) %>%
+    # #   group_by(country) %>%
+    # #   summarise_each(funs(sum)) %>%
+    # #   ungroup() %>%
+    # #   arrange(-sessions)
+    # # 
+    # # # tmp <- "Brazil"
+    # # countryName <- df2[df1$pointNumber+1,1]
+    # # browser()
+    # # df3 <- mainData %>%
+    # #   select(country,Brand,sessions,bounces) %>%
+    # #   filter(country == countryName$country) %>%
+    # #   select(-country) %>%
+    # #   group_by(Brand) %>%
+    # #   summarise_each(funs(sum)) %>%
+    # #   ungroup() %>%
+    # #   arrange(-sessions) %>%
+    # #   mutate(
+    # #     bounceRate = bounces / sessions
+    # #   )
+    # # browser()
+    # str(df2[df1$pointNumber+1,1]$country)
+
   })
   
 })

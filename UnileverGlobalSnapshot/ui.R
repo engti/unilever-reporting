@@ -28,7 +28,8 @@
       )
     ),
     fluidRow(
-      box(width = 4, height = "450px",
+      box(width = 12,status="primary",solidHeader = TRUE,collapsible = T,
+        box(width = 4, height = "450px",
         plotlyOutput("mediumPlot")
       ),
       box(width = 4, height = "450px",
@@ -36,10 +37,11 @@
       ),
       box(width = 4, height = "450px",
         plotlyOutput("countryPlot")
-      )
+      ))
     ),
     fluidRow(
-      box(width = 4,height = "450px",
+      box(width = 12,status="primary",solidHeader = TRUE,collapsible = T,
+        box(width = 4,height = "450px",
         plotlyOutput("piePlot")
       ),
       box(width = 4,height = "450px",
@@ -47,7 +49,7 @@
       ),
       box(width = 4,height = "450px",
           plotlyOutput("subcatPlot")
-      )
+      ))
     ),
     fluidRow(
       box(title = "Traffic Sources Table",width = 6,status="primary",solidHeader = TRUE,collapsible = T,
@@ -55,6 +57,16 @@
       ),
       box(title = "Top Brands",width = 6,status="primary",solidHeader = TRUE,collapsible = T,
           DT::dataTableOutput("topGainers")
+      )
+    ),
+    fluidRow(
+      box(width = 12,status="primary",solidHeader = TRUE,collapsible = T,
+        box(
+          plotlyOutput("scatterCountry")
+        ),
+        box(
+          DT::dataTableOutput("BrandTable")
+        )
       )
     ),
     fluidRow(
