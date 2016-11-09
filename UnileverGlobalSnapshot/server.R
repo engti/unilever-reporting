@@ -242,7 +242,14 @@ shinyServer(function(input, output) {
     dfq3$ChangeP <- (dfq3$Current-dfq3$Previous)/dfq3$Previous
     dfq3 %<>% arrange(-Current) %>% select(-Previous)
     datatable(dfq3) %>% formatPercentage(4,digits = 0) %>% formatCurrency(2:3,"",digits = 0)}else{
-      NULL
+      dfq1 <- derivedData() %>%
+        select(Brand,sessions) %>%
+        group_by(Brand) %>%
+        summarise_each(funs(sum)) %>%
+        ungroup() %>%
+        arrange(-sessions)
+      
+      datatable(dfq1) %>% formatCurrency(2,"",digits = 0)
     }
   })
   
