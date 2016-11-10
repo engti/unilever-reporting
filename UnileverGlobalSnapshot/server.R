@@ -32,7 +32,7 @@ shinyServer(function(input, output) {
   
   prevData <- reactive({
     if(!is.null(input$select_dates)){
-      df1 <- mainData %>% filter(week >= 10,week <= 16) #derivedData()
+      df1 <- derivedData() %>% filter(week >= input$select_dates$xmin,week <= input$select_dates$xmax) 
       max <- max(df1$week)
       min <- min(df1$week)
       diff <- max - min
@@ -50,7 +50,6 @@ shinyServer(function(input, output) {
   })
   
   kpiData <- reactive({
-    # df1 <- derivedData() %>% select(week,sessions,users,bounces) %>% filter(week >= abs(input$select_dates$xmin),week <= abs(input$select_dates$xmax))
     df1 <- derivedData() %>% select(week,sessions,users,bounces)
     df1
   })
@@ -71,15 +70,19 @@ shinyServer(function(input, output) {
       summarise_each(funs(sum)) %>% 
       ungroup()
     
-    ggplot(df1,aes(x=week,y=sessions)) + geom_line() + ggtitle("Weekly Trend - Drag to Select reporting period") + theme(axis.line=element_blank(),axis.text.x=element_blank(),
-  axis.text.y=element_blank(),axis.ticks=element_blank(),
-  axis.title.x=element_blank(),
-  axis.title.y=element_blank(),legend.position="none",
-  panel.background=element_blank(),
-  panel.border=element_blank(),
-  panel.grid.major=element_blank(),
-  panel.grid.minor=element_blank(),
-  plot.background=element_blank())  
+    ggplot(df1,aes(x=week,y=sessions)) + geom_line() + ggtitle("Weekly Trend - Drag to Select reporting period") + theme(
+      axis.line=element_blank(),
+      axis.text.x=element_blank(),
+      axis.text.y=element_blank(),
+      axis.ticks=element_blank(),
+      axis.title.x=element_blank(),
+      axis.title.y=element_blank(),legend.position="none",
+      panel.background=element_blank(),
+      panel.border=element_blank(),
+      panel.grid.major=element_blank(),
+      panel.grid.minor=element_blank(),
+      plot.background=element_blank()
+    )  
   })
   
   output$KPIvisit <- renderValueBox({
@@ -212,9 +215,9 @@ shinyServer(function(input, output) {
       ungroup() %>%
       arrange(-sessions)
     
-    df1 <- rbind(top_n(df1,8),
-                 slice(df1,9:n()) %>% summarise(medium="other",users=sum(users),sessions=sum(sessions),bounces=sum(bounces))
-    )
+    # df1 <- rbind(top_n(df1,8),
+    #              slice(df1,9:n()) %>% summarise(medium="other",users=sum(users),sessions=sum(sessions),bounces=sum(bounces))
+    # )
     df1 %<>% mutate(
       bounceRate = bounces / sessions
     ) %>%
@@ -240,7 +243,7 @@ shinyServer(function(input, output) {
     dfq3 <- merge(dfq1,dfq2)
     dfq3$Change <- (dfq3$Current-dfq3$Previous)
     dfq3$ChangeP <- (dfq3$Current-dfq3$Previous)/dfq3$Previous
-    dfq3 %<>% arrange(-Current) %>% select(-Previous)
+    dfq3 %<>% arrange(-Change) %>% select(-Previous)
     datatable(dfq3) %>% formatPercentage(4,digits = 0) %>% formatCurrency(2:3,"",digits = 0)}else{
       dfq1 <- derivedData() %>%
         select(Brand,sessions) %>%
@@ -289,7 +292,6 @@ shinyServer(function(input, output) {
         ungroup() %>%
         arrange(-sessions)
       
-      # tmp <- "Brazil"
       countryName <- df2[df1$pointNumber+1,1]
       
       df3 <- derivedData() %>%

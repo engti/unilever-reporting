@@ -76,4 +76,4 @@
     )
   )
   
-  dashboardPage(header, sidebar, body)
+  dashboardPage(header, sidebar, body,title = "Unilever Reporting Snapshot")
