@@ -8,6 +8,7 @@
   library(magrittr)
   
 ## read in data
+  t1 <- Sys.time()
   mainData <- read_csv("siteDataMerged.csv") %>%
     mutate(
       Brand = iconv(Brand, 'UTF-8', 'ASCII'),
